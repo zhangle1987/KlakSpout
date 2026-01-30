@@ -52,7 +52,13 @@ public sealed partial class SpoutReceiver : MonoBehaviour
         // Create a buffer if it hasn't been allocated yet.
         if (_buffer == null)
         {
-            _buffer = new RenderTexture(src.width, src.height, 0);
+            
+            _buffer = new RenderTexture(src.width, src.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
+            _buffer.useMipMap = true;
+            _buffer.autoGenerateMips = false;
+            _buffer.filterMode = FilterMode.Point;
+            //_buffer.wrapMode = Clamp;
+            // _buffer = new RenderTexture(src.width, src.height, 0);
             _buffer.hideFlags = HideFlags.DontSave;
             _buffer.Create();
         }
@@ -87,10 +93,11 @@ public sealed partial class SpoutReceiver : MonoBehaviour
 
         // Received texture buffering
         var buffer = PrepareBuffer();
-        if (buffer.isDataSRGB)
-            Blitter.BlitFromSrgb(_resources, _receiver.Texture, buffer);
-        else
-            Blitter.Blit(_resources, _receiver.Texture, buffer, true);
+        Blitter.Blit(_resources, _receiver.Texture, buffer, true);
+        // if (buffer.isDataSRGB)
+        //     Blitter.BlitFromSrgb(_resources, _receiver.Texture, buffer);
+        // else
+        //     Blitter.Blit(_resources, _receiver.Texture, buffer, true);
 
         // Renderer override
         if (_targetRenderer != null)
